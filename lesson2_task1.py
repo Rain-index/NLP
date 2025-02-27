@@ -7,8 +7,10 @@ with open('lesson2_data1.txt', 'r', encoding='utf-8') as file:
     #     print(line.strip())  # 使用 strip() 去掉每行首尾的空白符
 
 count = 0
-for i in word_tokenize(text):
-    if i == 'is':
+n = 0
+for i in sent_tokenize(text):
+    words = [word for word in word_tokenize(i)]
+    if 'is' in words:
         count += 1
 print(count)
 
