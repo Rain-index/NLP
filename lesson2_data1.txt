@@ -1,1 +1,8 @@
-On a sunny Saturday morning, I decided to visit the local park where children were laughing on the swings, dogs were chasing frisbees across the green grass, and elderly couples sat quietly on weathered wooden benches, enjoying the gentle breeze that carried the scent of blooming lilacs from a nearby garden while I walked along the winding path, sipping my warm peppermint tea from a reusable thermos and occasionally stopping to watch ducks paddle peacefully in the small pond dotted with lily pads.
+Our goal is to find what combination of variables can be used to make some sense out 
+of this data, or to see if any of these variables have any meaningful impact. Since the 
+data is about students, gpa may be a key variable that drives the relevance of the other 
+variables. The preceding image depicts scatter plots that show that a greater number 
+of female students have a higher gpa than the male students and a greater number of 
+male students spend more time on computer and get a similar gpa range of values. 
+Although all scatter plots are being shown here, the intent is to find out which data 
+plays a more significant role, and what sense can we make out of this data.
