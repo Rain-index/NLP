@@ -1,13 +1,13 @@
 
 from nltk import word_tokenize, sent_tokenize
 
-with open('lesson2_data2.txt', 'r', encoding='utf-8') as file:
-    content = file.read()
+with open('lesson2_data1.txt', 'r', encoding='utf-8') as file:
+    text = file.read()
     # for line in file:
     #     print(line.strip())  # 使用 strip() 去掉每行首尾的空白符
 
 count = 0
-for i in word_tokenize(content):
+for i in word_tokenize(text):
     if i == 'is':
         count += 1
 print(count)
