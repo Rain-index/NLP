@@ -66,7 +66,7 @@ for i in range(count):
         idf = idf +1
     if city3[i] > 0:
         idf = idf +1
-    idf = log(float(2) / idf)
+    idf = log(float(3) / idf)
     # print("+", city1[i], city1_sum)
     city1_res[i] = (float(city1[i]) / city1_sum) * idf
     city2_res[i] = (float(city2[i]) / city2_sum) * idf
