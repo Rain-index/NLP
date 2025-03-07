@@ -38,6 +38,7 @@ def read(name):
 documents = [
     read("document1.txt"),
     read("document2.txt"),
+    read("document3.txt")
 ]
 
 
@@ -46,12 +47,15 @@ vect = CountVectorizer()
 matrix = vect.fit_transform(documents)
 city1 = matrix.toarray()[0]
 city2 = matrix.toarray()[1]
+city3 = matrix.toarray()[2]
 words = vect.get_feature_names_out()
 count = len(words)
 city1_sum = sum(city1)
 city1_res = [0.0 for i in range(count)]
 city2_sum = sum(city2)
 city2_res = [0.0 for i in range(count)]
+city3_sum = sum(city3)
+city3_res = [0.0 for i in range(count)]
 
 
 for i in range(count):
@@ -60,12 +64,15 @@ for i in range(count):
         idf = idf +1
     if city2[i] > 0:
         idf = idf +1
+    if city3[i] > 0:
+        idf = idf +1
     idf = log(float(2) / idf)
     # print("+", city1[i], city1_sum)
     city1_res[i] = (float(city1[i]) / city1_sum) * idf
     city2_res[i] = (float(city2[i]) / city2_sum) * idf
+    city3_res[i] = (float(city3[i]) / city3_sum) * idf
 
-show(city1, words)
+show(city3, words)
 
 import numpy as np
 
@@ -91,8 +98,19 @@ def cosine_similarity(vec1, vec2):
         return dot_product / (norm1 * norm2)
 
 # Calculate the cosine similarity between two documents
-similarity = cosine_similarity(city1_res, city2_res)
-print(f"Cosine Similarity between documents: {similarity:.4f}")
+# The third and first documents
+similarity_3_1 = cosine_similarity(city3_res, city1_res)
+print(f"Cosine Similarity between the third and first documents: {similarity_3_1:.4f}")
+# The third and second documents
+similarity_3_2 = cosine_similarity(city3_res, city2_res)
+print(f"Cosine Similarity between the third and second documents: {similarity_3_2:.4f}")
+
+if similarity_3_1 > similarity_3_2:
+    print("The third document has a similarity greater than the second document")
+elif similarity_3_2 > similarity_3_1:
+    print("The second document has a similarity greater than the third document")
+else:
+    print("The documents have the same similarity.")
 
 
 
