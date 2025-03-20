@@ -23,9 +23,9 @@ def tokenize_onehot(text):
             index += 1
 
     # Generate one-hot encoding
-    one_hot_vectors = torch.zeros(len(words_dict), len(words_dict))
-    for key in words_dict:
-        one_hot_vectors[words_dict[key]][words_dict[key]] = 1
+    one_hot_vectors = torch.zeros(len(tokens), len(words_dict))
+    for index, word in enumerate(tokens):
+        one_hot_vectors[index][words_dict[word]] = 1
 
 
 
