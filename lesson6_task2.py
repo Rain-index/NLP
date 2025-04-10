@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 import os
-
+import torch.nn as nn
 
 class CountryDataset(Dataset):
     def __init__(self, directory):
@@ -66,23 +66,39 @@ class CountryDataset(Dataset):
         output_tensor = torch.zeros(self.num_countries, dtype=torch.float32)
         output_tensor[country_idx] = 1.0
 
-        return input_tensor, output_tensor,word
+        return input_tensor, output_tensor, word
 
     @property
     def country_names(self):
         return self.countries.copy()
 
 
-dataset = CountryDataset("name")
+class RNNExample(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):   # output_size:有多少个国家；input：有多少个字母，hidden：隐藏层的长度
+        super(RNNExample, self).__init__()
+        self.rnn = nn.RNN(input_size, hidden_size)
+        self.cl = nn.Linear(hidden_size, output_size)
+        self.softmax = nn.LogSoftmax(dim=1)
+
+    def forward(self, x):
+        rnn_out, hidden = self.rnn(x)
+        output = self.cl(hidden[0])
+        output = self.softmax(output)
+        return output
+
+
+
+
+dataset = CountryDataset("names")
 # print(dataset)
 
 # View Country List
 print(dataset.country_names)
 
-dataset = CountryDataset("name")
+dataset = CountryDataset("names")
 
 # Get the first sample
-input_tensor, output_tensor, word = dataset[0]
+input_tensor, output_tensor, word = dataset[5000]
 print(f'Name is {word}')
 print(f"Input Shape: {input_tensor.shape}")
 print(f"Output Tags: {output_tensor}")   # Country one-hot vector
