@@ -1,4 +1,5 @@
 import torch
+from sklearn.svm._libsvm import predict
 from torch.utils.data import Dataset
 import os
 import torch.nn as nn
@@ -89,22 +90,57 @@ class RNNExample(nn.Module):
 
 
 
-dataset = CountryDataset("names")
+dataset = CountryDataset("NLP/names")
 # print(dataset)
 
 # View Country List
 print(dataset.country_names)
 
-dataset = CountryDataset("names")
 
 # Get the first sample
-input_tensor, output_tensor, word = dataset[5000]
+input_tensor, output_tensor, word = dataset[0]
+# input_vector = input_tensor.unsqueeze(1)
 print(f'Name is {word}')
 print(f"Input Shape: {input_tensor.shape}")
 print(f"Output Tags: {output_tensor}")   # Country one-hot vector
 
 
 
+input_size = input_tensor.size()[1]
+print(f"Input Size: {input_size}")
+hidden_size = 128
+output_size = output_tensor.size()[0]
+print(f"output Size: {output_size}")
+model = RNNExample(input_size, hidden_size, output_size)
 
+# result = model(input_tensor)
+# print(result)
+
+
+# 调整输入维度适配RNN模型（添加序列长度和batch维度）
+# 原始维度： (sequence_length, num_letters)
+# 需要格式： (sequence_length, batch_size, input_size)
+input_vector = input_tensor.unsqueeze(1)  # 添加batch维度 -> (seq_len, 1, 52)
+
+# 模型前向传播
+with torch.no_grad():  # 禁用梯度计算
+    model_output = model(input_vector)
+
+# 结果解析
+_, predicted_idx = torch.max(model_output, 1)
+predicted_country = dataset.country_names[predicted_idx.item()]
+
+# 打印处理结果
+# print(f"Processing words: {word}")
+print(f"Input Shape: {input_vector.shape} (sequence length x batch size x feature dimension)")
+print(f"Forecast Country Index: {predicted_idx.item()}")
+print(f"Predicted Country Name: {predicted_country}")
+
+
+# 查看第一个样本的详细信息 //View details of the first sample
+print("\nSample details verification:")
+print(f"Original word: {word}")
+print(f"Letter sequence length: {input_tensor.shape[0]}")
+print(f"Corresponding country label: {torch.argmax(output_tensor).item()} - {dataset.country_names[torch.argmax(output_tensor).item()]}")
 
 
