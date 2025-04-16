@@ -90,8 +90,11 @@ class RNNExample(nn.Module):
 
 
 
+
+
 dataset = CountryDataset("NLP/names")
 # print(dataset)
+
 
 # View Country List
 print(dataset.country_names)
@@ -99,7 +102,7 @@ print(dataset.country_names)
 
 # Get the first sample
 input_tensor, output_tensor, word = dataset[0]
-# input_vector = input_tensor.unsqueeze(1)
+
 print(f'Name is {word}')
 print(f"Input Shape: {input_tensor.shape}")
 print(f"Output Tags: {output_tensor}")   # Country one-hot vector
@@ -107,11 +110,17 @@ print(f"Output Tags: {output_tensor}")   # Country one-hot vector
 
 
 input_size = input_tensor.size()[1]
-print(f"Input Size: {input_size}")
+print(f"\nInput Size: {input_size}")
 hidden_size = 128
 output_size = output_tensor.size()[0]
 print(f"output Size: {output_size}")
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+train_set, test_set = torch.utils.data.random_split(dataset, [.85, .15], generator=torch.Generator(device="cpu").manual_seed(2024))
+
 model = RNNExample(input_size, hidden_size, output_size)
+model = model.to(device)
+
 
 # result = model(input_tensor)
 # print(result)
