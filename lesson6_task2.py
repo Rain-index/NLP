@@ -1,5 +1,5 @@
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 import os
 import torch.nn as nn
 
@@ -99,43 +99,63 @@ dataset = CountryDataset("names")
 print(dataset.country_names)
 
 
-# Get the first sample
+# # Get the first sample
 input_tensor, output_tensor, word = dataset[0]
-
-print(f'Name is {word}')
-print(f"Input Shape: {input_tensor.shape}")
-print(f"Output Tags: {output_tensor}")   # Country one-hot vector
-
-
-
-input_size = input_tensor.size()[1]
-print(f"\nInput Size: {input_size}")
-hidden_size = 128
-output_size = output_tensor.size()[0]
-print(f"output Size: {output_size}")
+#
+# print(f'Name is {word}')
+# print(f"Input Shape: {input_tensor.shape}")
+# print(f"Output Tags: {output_tensor}")   # Country one-hot vector
+#
+#
+#
+# input_size = input_tensor.size()[1]
+# print(f"\nInput Size: {input_size}")
+# hidden_size = 128
+# output_size = output_tensor.size()[0]
+# print(f"output Size: {output_size}")
 
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 train_set, test_set = torch.utils.data.random_split(dataset, [.85, .15], generator=torch.Generator(device="cpu").manual_seed(2024))
+input_size = input_tensor.size()[1]
+hidden_size = 128
+output_size = output_tensor.size()[0]
+
 model = RNNExample(input_size, hidden_size, output_size).to(device)
+model = model.to(device)
+
+# loss function
+loss_fn = nn.MSELoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+
+# 训练循环
+model.train()
+for input_tensor, output_tensor, word in train_set:
+    inputs = input_tensor.unsqueeze(1).to(device)
+    target = output_tensor.unsqueeze(0).to(device)  # 调整标签形状以匹配模型输出
+    #   前向传播
+    model_output = model(inputs)
+    # 计算损失
+    loss = loss_fn(model_output, target)
+    # 反向传播和优化
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    # print(f"Loss: {loss.item()}")
+
+
+
+
 
 # Enumerate the training set and evaluate the model accuracy
-model.eval()
-correct = 0
-total = 0
-for input_tensor, output_tensor, word in train_set:
-    input_tensor = input_tensor.unsqueeze(1).to(device)
-    output = model(input_tensor)
-    _, pred_idx = torch.max(output, 1)
-    predicted_country = dataset.country_names[pred_idx.item()]
-    true_idx = torch.argmax(output_tensor).item()
-    # 统计正确数
-    if pred_idx.item() == true_idx:
-        correct += 1
-    total += 1
-accuracy = correct / total
-print(f"\nTraining Set Accuracy: {accuracy * 100:.2f}%")
+# for input_tensor, output_tensor, word in train_set:
+#     input_tensor = input_tensor.unsqueeze(1).to(device)
+#     output = model(input_tensor)
+#     _, pred_idx = torch.max(output, 1)
+#     predicted_country = dataset.country_names[pred_idx.item()]
+#     true_idx = torch.argmax(output_tensor).item()
+
 
 
 
