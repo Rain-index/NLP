@@ -131,18 +131,17 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 
 # 训练循环
 model.train()
-for input_tensor, output_tensor, word in train_set:
+# for epoch in range(20):
+for idx, (input_tensor, output_tensor, word) in enumerate(train_set):
     inputs = input_tensor.unsqueeze(1).to(device)
-    target = output_tensor.unsqueeze(0).to(device)  # 调整标签形状以匹配模型输出
-    #   前向传播
+    target = output_tensor.unsqueeze(0).to(device)
     model_output = model(inputs)
-    # 计算损失
     loss = loss_fn(model_output, target)
-    # 反向传播和优化
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
-    # print(f"Loss: {loss.item()}")
+    if idx % 100 == 0:
+        print(f" {idx},Loss: {loss.item()}")
 
 
 
