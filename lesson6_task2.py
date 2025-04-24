@@ -76,9 +76,9 @@ class CountryDataset(Dataset):
 class RNNExample(nn.Module):
     def __init__(self, input_size, hidden_size, output_size):   # output_size:有多少个国家；input：有多少个字母，hidden：隐藏层的长度
         super(RNNExample, self).__init__()
-        self.rnn = nn.RNN(input_size, hidden_size)
+        self.rnn = nn.RNN(input_size, hidden_size, batch_first=False)
         self.cl = nn.Linear(hidden_size, output_size)
-        self.softmax = nn.LogSoftmax(dim=1)
+        self.softmax = nn.LogSoftmax(dim=0)
 
     def forward(self, x):
         rnn_out, hidden = self.rnn(x)
@@ -91,12 +91,12 @@ class RNNExample(nn.Module):
 
 
 
-dataset = CountryDataset("names")
+dataset = CountryDataset("NLP/names")
 # print(dataset)
 
 
 # View Country List
-print(dataset.country_names)
+# print(dataset.country_names)
 
 
 # # Get the first sample
@@ -123,7 +123,7 @@ hidden_size = 128
 output_size = output_tensor.size()[0]
 
 model = RNNExample(input_size, hidden_size, output_size).to(device)
-model = model.to(device)
+# model = model.to(device)
 
 # loss function
 loss_fn = nn.MSELoss()
@@ -133,8 +133,10 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 model.train()
 # for epoch in range(20):
 for idx, (input_tensor, output_tensor, word) in enumerate(train_set):
-    inputs = input_tensor.unsqueeze(1).to(device)
-    target = output_tensor.unsqueeze(0).to(device)
+    inputs = input_tensor.to(device)
+    # print(inputs.shape)
+    target = output_tensor.to(device)
+    # print(target.shape)
     model_output = model(inputs)
     loss = loss_fn(model_output, target)
     optimizer.zero_grad()
@@ -168,15 +170,15 @@ for idx, (input_tensor, output_tensor, word) in enumerate(train_set):
 # # 结果解析
 # _, predicted_idx = torch.max(model_output, 1)
 # predicted_country = dataset.country_names[predicted_idx.item()]
-
+#
 # # 打印处理结果
 # # print(f"Processing words: {word}")
-# print(f"Input Shape: {input_vector.shape} (sequence length x batch size x feature dimension)")
+# print(f"Input Shape: {input_tensor.shape} (sequence length x batch size x feature dimension)")
 # print(f"Forecast Country Index: {predicted_idx.item()}")
 # print(f"Predicted Country Name: {predicted_country}")
-
-
-# 查看第一个样本的详细信息 //View details of the first sample
+#
+#
+# # 查看第一个样本的详细信息 //View details of the first sample
 # print("\nSample details verification:")
 # print(f"Original word: {word}")
 # print(f"Letter sequence length: {input_tensor.shape[0]}")
